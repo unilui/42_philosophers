@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/03 07:41:51 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/03 21:56:24 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ typedef struct s_philo
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
+	char			left_fork;
+	char			right_fork;
 	char			*forks;
 	int				*simulation;
 	pthread_mutex_t	*fork_mtx;
@@ -51,6 +53,35 @@ typedef struct s_data
 	t_philo			*ph;
 	pthread_mutex_t	simulation_mtx;
 }	t_data;
+
+void	ft_bzero(void *s, size_t n)
+{
+	size_t			i;
+	unsigned char	*c;
+
+	i = 0;
+	c = (unsigned char *)s;
+	while (i < n)
+	{
+		c[i] = '\0';
+		i++;
+	}
+}
+
+void	*ft_calloc(size_t nmemb, size_t size)
+{
+	unsigned char	*arr;
+
+	if (nmemb <= 0 || size <= 0)
+		return (NULL);
+	else if (size / nmemb > __INT_MAX__)
+		return (NULL);
+	arr = malloc(nmemb * size);
+	if (arr == NULL)
+		return (NULL);
+	ft_bzero(arr, (nmemb * size));
+	return (arr);
+}
 
 size_t	current_time(void)
 {
@@ -74,6 +105,41 @@ int	simulation_status(t_philo *ph)
 	return (status);
 }
 
+int		get_forks(t_philo *ph)
+{
+	int	status;
+
+	status = 0;
+	pthread_mutex_lock(&ph->fork_mtx[ph->left_fork]);
+	pthread_mutex_lock(&ph->fork_mtx[ph->right_fork]);
+	if (ph->forks[ph->left_fork] && ph->forks[ph->right_fork])
+	{
+		ph->forks[ph->left_fork] = 0;
+		ph->forks[ph->right_fork] = 0;
+		printf("%zu: %d has taken a fork\n", current_time(), ph->id + 1);
+		printf("%zu: %d has taken a fork\n", current_time(), ph->id + 1);
+		status = 1;
+	}
+	pthread_mutex_unlock(&ph->fork_mtx[ph->left_fork]);
+	pthread_mutex_unlock(&ph->fork_mtx[ph->right_fork]);
+	return (status);
+}
+
+void	return_forks(t_philo *ph)
+{
+	pthread_mutex_lock(&ph->fork_mtx[ph->left_fork]);
+	pthread_mutex_lock(&ph->fork_mtx[ph->right_fork]);
+	ph->forks[ph->left_fork] = 1;
+	ph->forks[ph->right_fork] = 1;
+	pthread_mutex_unlock(&ph->fork_mtx[ph->left_fork]);
+	pthread_mutex_unlock(&ph->fork_mtx[ph->right_fork]);
+}
+
+void	call_waitress(t_philo *ph)
+{
+	
+}
+
 void	*philosopher(void *args)
 {
 	t_philo *info;
@@ -82,14 +148,14 @@ void	*philosopher(void *args)
 	while (simulation_status(info) == RUNNING)
 	{
 		printf("%zu: %d is thinking\n", current_time(), info->id + 1);
-		//while (!get_forks(info->left_fork, info->right_fork))
-		//	continue;
+		while (!get_forks(info) && simulation_status(info) == RUNNING)
+			continue;
 		if (simulation_status(info) == STOP)
 			break ;
 		printf("%zu: %d is eating\n", current_time(), info->id + 1);
 		usleep(info->time_to_eat * 1000);
-		//meal_register(info->id);
-		//return_forks(info->left_fork, info->right_fork);
+		call_waitress(info);
+		return_forks(info);
 		if (simulation_status(info) == STOP)
 			break ;
 		printf("%zu: %d is sleeping\n", current_time(), info->id + 1);
@@ -103,7 +169,7 @@ void	create_threads(t_data *data)
 	int	id;
 
 	id = 0;
-	data->th = malloc(data->number_of_philosophers * sizeof(pthread_t));
+	data->th = ft_calloc(data->number_of_philosophers, sizeof(pthread_t));
 	while (id < data->number_of_philosophers)
 	{
 		pthread_create(&data->th[id],
@@ -115,10 +181,12 @@ void	create_threads(t_data *data)
 void	create_philosophers(t_data *data)
 {
 	int	id;
+	int	nbr;
 
 	id = 0;
-	data->ph = malloc(data->number_of_philosophers * sizeof(t_philo));
-	while (id < data->number_of_philosophers)
+	nbr = data->number_of_philosophers;
+	data->ph = ft_calloc(nbr, sizeof(t_philo));
+	while (id < nbr)
 	{
 		data->ph[id].simulation = &data->simulation;
 		data->ph[id].simulation_mtx = &data->simulation_mtx;
@@ -127,6 +195,11 @@ void	create_philosophers(t_data *data)
 		data->ph[id].time_to_sleep = data->time_to_sleep;
 		data->ph[id].forks = data->forks;
 		data->ph[id].fork_mtx = data->fork_mtx;
+		data->ph[id].left_fork = id;
+		if (id == (nbr - 1) && nbr > 1)
+			data->ph[id].right_fork = 0;
+		else
+			data->ph[id].right_fork = id + 1;
 		data->ph[id].id = id;
 		id++;
 	}
@@ -134,7 +207,7 @@ void	create_philosophers(t_data *data)
 
 void	init_simulation(t_data *data)
 {
-	data->number_of_philosophers = 4;
+	data->number_of_philosophers = 5;
 	data->time_to_die = 800;
 	data->time_to_eat = 200;
 	data->time_to_sleep = 200;
@@ -234,10 +307,14 @@ void	create_forks(t_data *data)
 	int	nbr;
 
 	nbr = data->number_of_philosophers;
-	data->forks = malloc((nbr * sizeof(char)) + (nbr == 1));
-	data->fork_mtx = malloc((nbr * sizeof(pthread_mutex_t)) + (nbr == 1));
-	memset(&data->forks, 0, nbr + (nbr == 1));
-	memset(&data->forks, 1, nbr);
+	data->forks = ft_calloc((nbr + (nbr == 1)), sizeof(char));
+	data->fork_mtx = ft_calloc((nbr + (nbr == 1)), sizeof(pthread_mutex_t));
+	nbr = 0;
+	while (nbr < data->number_of_philosophers)
+	{
+		data->forks[nbr] = 1;
+		nbr++;
+	}
 }
 
 int	main(int argc, char **argv)
@@ -245,8 +322,8 @@ int	main(int argc, char **argv)
 	t_data	data;
 
 	init_simulation(&data);
-	create_philosophers(&data);
 	create_forks(&data);
+	create_philosophers(&data);
 	init_mtx(&data);
 	create_threads(&data);
 	init_services(&data);
