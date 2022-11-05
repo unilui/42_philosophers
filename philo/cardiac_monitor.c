@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.c                                     :+:      :+:    :+:   */
+/*   cardiac_monitor.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/04 21:35:41 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/05 00:01:29 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ void	*cardiac_monitor(void *args)
 			data->simulation = STOP;
 			printf("%zu: 😵 %d died 💀\n", current_time(), id + 1);
 		}
-		pthread_mutex_unlock(&data->ph[id].philo_mtx);
 		pthread_mutex_unlock(&data->simulation_mtx);
+		pthread_mutex_unlock(&data->ph[id].philo_mtx);
 		id++;
 		if (id == data->number_of_philosophers)
 			id = 0;

@@ -1,11 +1,12 @@
 SRCS		= philosophers.c\
 				utils.c\
-				philo.c\
+				philosopher_th.c\
 				time.c\
 				cardiac_monitor.c\
 				waitress.c\
 				initialization.c\
-				exit.c
+				exit.c\
+				args_validation.c
 
 OBJS		= ${SRCS:%.c=$(OBJS_DIR)%.o}
 OBJS_DIR	= objects/
@@ -17,7 +18,7 @@ RM			= rm -rf
 
 $(OBJS_DIR)%.o:	%.c
 			@mkdir -p $(dir $@)
-			@$(CC) $(CFLAGS) -g -c $< -o $@ -I includes
+			@$(CC) $(CFLAGS) -g -c $< -o $@
 
 all:		$(NAME)
 

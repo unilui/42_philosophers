@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:20:23 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/03 07:29:39 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/05 02:28:50 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,16 +59,20 @@ typedef struct s_data
 
 void	*ft_calloc(size_t nmemb, size_t size);
 void	ft_bzero(void *s, size_t n);
+int		ft_isdigit(int c);
+long	ft_atoi(const char *nptr);
+int		args_validation(int argc, char **argv);
+int		init_simulation(int argc, char **argv, t_data *data);
 void	*philosopher(void *args);
 size_t	current_time(void);
 void	*cardiac_monitor(void *args);
 void	*waitress(void *args);
 void	create_threads(t_data *data);
-void	create_philosophers(t_data *data);
+void	init_philosophers(t_data *data);
 void	init_mtx(t_data *data);
-void	init_services(t_data *data);
-void	create_forks(t_data *data);
+void	init_forks(t_data *data);
 void	destroy_mtx(t_data *data);
 void	wait_threads(t_data *data);
+void	free_memory(t_data *data);
 
 #endif
