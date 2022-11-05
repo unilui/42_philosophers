@@ -12,28 +12,38 @@
 
 #include "philosophers.h"
 
-void	init_simulation(t_data *data)
+void	destroy_mtx(t_data *data)
 {
-	memset(data, 0, sizeof(t_data));
-	data->number_of_philosophers = 5;
-	data->time_to_die = 800;
-	data->time_to_eat = 200;
-	data->time_to_sleep = 200;
-	data->philosopher_must_eat = 2;
+	int	id;
+	int	nbr;
+
+	id = 0;
+	nbr = data->number_of_philosophers;
+	pthread_mutex_destroy(&data->simulation_mtx);
+	while (id < nbr)
+	{
+		pthread_mutex_destroy(&data->ph[id].philo_mtx);
+		id ++;
+	}
+	id = 0;
+	while (id < (nbr + (nbr == 1)))
+	{
+		pthread_mutex_destroy(&data->fork_mtx[id]);
+		id ++;
+	}
 }
 
-int	main(int argc, char **argv)
+void	wait_threads(t_data *data)
 {
-	t_data	data;
+	int	id;
 
-	init_simulation(&data);
-	create_forks(&data);
-	create_philosophers(&data);
-	init_mtx(&data);
-	create_threads(&data);
-	init_services(&data);
-	data.simulation = RUNNING;
-	wait_threads(&data);
-	destroy_mtx(&data);
-	return (0);
+	id = 0;
+	pthread_join(data->cm, NULL);
+	if (data->philosopher_must_eat)
+		pthread_join(data->wt, NULL);
+	while (id < data->number_of_philosophers)
+	{
+		pthread_join(data->th[id], NULL);
+		id++;
+	}
 }

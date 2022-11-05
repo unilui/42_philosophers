@@ -1,4 +1,11 @@
-SRCS		= philosophers.c
+SRCS		= philosophers.c\
+				utils.c\
+				philo.c\
+				time.c\
+				cardiac_monitor.c\
+				waitress.c\
+				initialization.c\
+				exit.c
 
 OBJS		= ${SRCS:%.c=$(OBJS_DIR)%.o}
 OBJS_DIR	= objects/

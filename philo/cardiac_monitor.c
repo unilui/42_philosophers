@@ -12,28 +12,30 @@
 
 #include "philosophers.h"
 
-void	init_simulation(t_data *data)
+void	*cardiac_monitor(void *args)
 {
-	memset(data, 0, sizeof(t_data));
-	data->number_of_philosophers = 5;
-	data->time_to_die = 800;
-	data->time_to_eat = 200;
-	data->time_to_sleep = 200;
-	data->philosopher_must_eat = 2;
-}
+	int		id;
+	t_data	*data;
 
-int	main(int argc, char **argv)
-{
-	t_data	data;
-
-	init_simulation(&data);
-	create_forks(&data);
-	create_philosophers(&data);
-	init_mtx(&data);
-	create_threads(&data);
-	init_services(&data);
-	data.simulation = RUNNING;
-	wait_threads(&data);
-	destroy_mtx(&data);
-	return (0);
+	id = 0;
+	data = (t_data *)args;
+	while (data->simulation == STOP)
+		continue ;
+	while (id < data->number_of_philosophers
+		&& data->simulation == RUNNING)
+	{
+		pthread_mutex_lock(&data->simulation_mtx);
+		pthread_mutex_lock(&data->ph[id].philo_mtx);
+		if (current_time() > data->ph[id].time_to_die)
+		{
+			data->simulation = STOP;
+			printf("%zu: 😵 %d died 💀\n", current_time(), id + 1);
+		}
+		pthread_mutex_unlock(&data->ph[id].philo_mtx);
+		pthread_mutex_unlock(&data->simulation_mtx);
+		id++;
+		if (id == data->number_of_philosophers)
+			id = 0;
+	}
+	return (NULL);
 }

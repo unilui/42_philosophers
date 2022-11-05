@@ -1,22 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.h                                     :+:      :+:    :+:   */
+/*   philosophers.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/31 17:20:23 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/03 07:29:39 by lufelip2         ###   ########.fr       */
+/*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
+/*   Updated: 2022/11/04 21:35:41 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILOSOPHERS_H
-# define PHILOSOPHERS_H
+#include "philosophers.h"
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <pthread.h>
-# include <sys/time.h>
-# include <string.h>
+size_t	current_time(void)
+{
+	static size_t	initial_time;
+	struct timeval	tv;
+	size_t			time;
 
-#endif
+	gettimeofday(&tv, NULL);
+	time = ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+	if (!initial_time)
+		initial_time = time;
+	return (time - initial_time);
+}

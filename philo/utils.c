@@ -12,28 +12,31 @@
 
 #include "philosophers.h"
 
-void	init_simulation(t_data *data)
+void	ft_bzero(void *s, size_t n)
 {
-	memset(data, 0, sizeof(t_data));
-	data->number_of_philosophers = 5;
-	data->time_to_die = 800;
-	data->time_to_eat = 200;
-	data->time_to_sleep = 200;
-	data->philosopher_must_eat = 2;
+	size_t			i;
+	unsigned char	*c;
+
+	i = 0;
+	c = (unsigned char *)s;
+	while (i < n)
+	{
+		c[i] = '\0';
+		i++;
+	}
 }
 
-int	main(int argc, char **argv)
+void	*ft_calloc(size_t nmemb, size_t size)
 {
-	t_data	data;
+	unsigned char	*arr;
 
-	init_simulation(&data);
-	create_forks(&data);
-	create_philosophers(&data);
-	init_mtx(&data);
-	create_threads(&data);
-	init_services(&data);
-	data.simulation = RUNNING;
-	wait_threads(&data);
-	destroy_mtx(&data);
-	return (0);
+	if (nmemb <= 0 || size <= 0)
+		return (NULL);
+	else if (size / nmemb > __INT_MAX__)
+		return (NULL);
+	arr = malloc(nmemb * size);
+	if (arr == NULL)
+		return (NULL);
+	ft_bzero(arr, (nmemb * size));
+	return (arr);
 }
