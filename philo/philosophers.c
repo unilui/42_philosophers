@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/03 21:56:24 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/04 21:35:41 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,11 @@
 typedef struct s_philo
 {
 	int				id;
+	int				ttd;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
+	int				orders;
 	char			left_fork;
 	char			right_fork;
 	char			*forks;
@@ -42,6 +44,7 @@ typedef struct s_philo
 typedef struct s_data
 {
 	int				number_of_philosophers;
+	int				philosopher_must_eat;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
@@ -49,6 +52,7 @@ typedef struct s_data
 	char			*forks;
 	pthread_mutex_t	*fork_mtx;
 	pthread_t		cm;
+	pthread_t		wt;
 	pthread_t		*th;
 	t_philo			*ph;
 	pthread_mutex_t	simulation_mtx;
@@ -98,37 +102,41 @@ size_t	current_time(void)
 
 int	simulation_status(t_philo *ph)
 {
-	int status;
+	int	status;
 	pthread_mutex_lock(ph->simulation_mtx);
 	status = *ph->simulation;
 	pthread_mutex_unlock(ph->simulation_mtx);
 	return (status);
 }
 
-int		get_forks(t_philo *ph)
+int	get_forks(t_philo *ph)
 {
 	int	status;
 
 	status = 0;
 	pthread_mutex_lock(&ph->fork_mtx[ph->left_fork]);
 	pthread_mutex_lock(&ph->fork_mtx[ph->right_fork]);
-	if (ph->forks[ph->left_fork] && ph->forks[ph->right_fork])
+	if (ph->forks[ph->left_fork] && ph->forks[ph->right_fork]
+		&& *ph->simulation == RUNNING)
 	{
 		ph->forks[ph->left_fork] = 0;
 		ph->forks[ph->right_fork] = 0;
-		printf("%zu: %d has taken a fork\n", current_time(), ph->id + 1);
-		printf("%zu: %d has taken a fork\n", current_time(), ph->id + 1);
+		printf("%zu: 😈 %d has taken a fork 🥢\n",
+			current_time(), ph->id + 1);
+		printf("%zu: 😈 %d has taken a fork 🥢\n",
+			current_time(), ph->id + 1);
 		status = 1;
 	}
-	pthread_mutex_unlock(&ph->fork_mtx[ph->left_fork]);
-	pthread_mutex_unlock(&ph->fork_mtx[ph->right_fork]);
+	else
+	{
+		pthread_mutex_unlock(&ph->fork_mtx[ph->left_fork]);
+		pthread_mutex_unlock(&ph->fork_mtx[ph->right_fork]);
+	}
 	return (status);
 }
 
 void	return_forks(t_philo *ph)
 {
-	pthread_mutex_lock(&ph->fork_mtx[ph->left_fork]);
-	pthread_mutex_lock(&ph->fork_mtx[ph->right_fork]);
 	ph->forks[ph->left_fork] = 1;
 	ph->forks[ph->right_fork] = 1;
 	pthread_mutex_unlock(&ph->fork_mtx[ph->left_fork]);
@@ -137,7 +145,10 @@ void	return_forks(t_philo *ph)
 
 void	call_waitress(t_philo *ph)
 {
-	
+	pthread_mutex_lock(&ph->philo_mtx);
+	ph->time_to_die = current_time() + ph->ttd;
+	ph->orders++;
+	pthread_mutex_unlock(&ph->philo_mtx);
 }
 
 void	*philosopher(void *args)
@@ -145,20 +156,25 @@ void	*philosopher(void *args)
 	t_philo *info;
 
 	info = (t_philo *)args;
+	while (simulation_status(info) == STOP)
+		continue ;
 	while (simulation_status(info) == RUNNING)
 	{
-		printf("%zu: %d is thinking\n", current_time(), info->id + 1);
+		printf("%zu: 😈 %d is thinking 🤔\n", current_time(), info->id + 1);
 		while (!get_forks(info) && simulation_status(info) == RUNNING)
 			continue;
 		if (simulation_status(info) == STOP)
+		{
+			return_forks(info);
 			break ;
-		printf("%zu: %d is eating\n", current_time(), info->id + 1);
+		}
+		printf("%zu: 😈 %d is eating 🍽️\n", current_time(), info->id + 1);
 		usleep(info->time_to_eat * 1000);
 		call_waitress(info);
 		return_forks(info);
 		if (simulation_status(info) == STOP)
 			break ;
-		printf("%zu: %d is sleeping\n", current_time(), info->id + 1);
+		printf("%zu: 😈 %d is sleeping 😴\n", current_time(), info->id + 1);
 		usleep(info->time_to_sleep * 1000);
 	}
 	return (NULL);
@@ -191,6 +207,7 @@ void	create_philosophers(t_data *data)
 		data->ph[id].simulation = &data->simulation;
 		data->ph[id].simulation_mtx = &data->simulation_mtx;
 		data->ph[id].time_to_die = data->time_to_die;
+		data->ph[id].ttd = data->time_to_die;
 		data->ph[id].time_to_eat = data->time_to_eat;
 		data->ph[id].time_to_sleep = data->time_to_sleep;
 		data->ph[id].forks = data->forks;
@@ -207,11 +224,12 @@ void	create_philosophers(t_data *data)
 
 void	init_simulation(t_data *data)
 {
+	memset(data, 0, sizeof(t_data));
 	data->number_of_philosophers = 5;
 	data->time_to_die = 800;
 	data->time_to_eat = 200;
 	data->time_to_sleep = 200;
-	data->simulation = RUNNING;
+	data->philosopher_must_eat = 2;
 }
 
 void	init_mtx(t_data *data)
@@ -259,21 +277,21 @@ void	destroy_mtx(t_data *data)
 void	*cardiac_monitor(void *args)
 {
 	int		id;
-	size_t	time;
 	t_data	*data;
 
 	id = 0;
 	data = (t_data *)args;
+	while (data->simulation == STOP)
+		continue ;
 	while (id < data->number_of_philosophers
 			&& data->simulation == RUNNING)
 	{
-		time = current_time();
 		pthread_mutex_lock(&data->simulation_mtx);
 		pthread_mutex_lock(&data->ph[id].philo_mtx);
-		if (time > data->ph[id].time_to_die)
+		if (current_time() > data->ph[id].time_to_die)
 		{
 			data->simulation = STOP;
-			printf("%zu: %d is died\n", time, id + 1);
+			printf("%zu: 😵 %d died 💀\n", current_time(), id + 1);
 		}
 		pthread_mutex_unlock(&data->ph[id].philo_mtx);
 		pthread_mutex_unlock(&data->simulation_mtx);
@@ -284,8 +302,36 @@ void	*cardiac_monitor(void *args)
 	return (NULL);
 }
 
+void	*waitress(void *args)
+{
+	int		id;
+	t_data	*data;
+
+	data = (t_data *)args;
+	while (data->simulation == STOP)
+		continue ;
+	while (data->simulation == RUNNING)
+	{
+		id = 0;
+		while (id < data->number_of_philosophers
+			&& data->simulation == RUNNING)
+		{
+			if (data->ph[id].orders < data->philosopher_must_eat)
+				id = 0;
+			else
+				id++;
+		}
+		pthread_mutex_lock(&data->simulation_mtx);
+		data->simulation = STOP;
+		pthread_mutex_unlock(&data->simulation_mtx);
+	}
+	return (NULL);
+}
+
 void	init_services(t_data *data)
 {
+	if (data->philosopher_must_eat)
+		pthread_create(&data->wt, NULL, &waitress, (void *)data);
 	pthread_create(&data->cm, NULL, &cardiac_monitor, (void *)data);
 }
 
@@ -295,6 +341,8 @@ void	wait_threads(t_data *data)
 
 	id = 0;
 	pthread_join(data->cm, NULL);
+	if (data->philosopher_must_eat)
+		pthread_join(data->wt, NULL);
 	while (id < data->number_of_philosophers)
 	{
 		pthread_join(data->th[id], NULL);
@@ -327,6 +375,7 @@ int	main(int argc, char **argv)
 	init_mtx(&data);
 	create_threads(&data);
 	init_services(&data);
+	data.simulation = RUNNING;
 	wait_threads(&data);
 	destroy_mtx(&data);
 	return (0);
