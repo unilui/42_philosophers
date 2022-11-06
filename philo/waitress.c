@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.c                                     :+:      :+:    :+:   */
+/*   waitress.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/04 21:35:41 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/06 17:44:21 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@ void	*waitress(void *args)
 	t_data	*data;
 
 	data = (t_data *)args;
-	while (data->simulation == STOP)
-		continue ;
 	while (data->simulation == RUNNING)
 	{
 		id = 0;
@@ -30,6 +28,7 @@ void	*waitress(void *args)
 				id = 0;
 			else
 				id++;
+			usleep(20);
 		}
 		pthread_mutex_lock(&data->simulation_mtx);
 		data->simulation = STOP;

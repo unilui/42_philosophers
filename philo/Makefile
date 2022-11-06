@@ -18,7 +18,7 @@ RM			= rm -rf
 
 $(OBJS_DIR)%.o:	%.c
 			@mkdir -p $(dir $@)
-			@$(CC) $(CFLAGS) -g -c $< -o $@
+			@$(CC) $(CFLAGS) -O3 -c $< -o $@
 
 all:		$(NAME)
 

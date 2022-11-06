@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/05 00:01:29 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/06 17:42:51 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ void	*cardiac_monitor(void *args)
 
 	id = 0;
 	data = (t_data *)args;
-	while (data->simulation == STOP)
-		continue ;
 	while (id < data->number_of_philosophers
 		&& data->simulation == RUNNING)
 	{
@@ -36,6 +34,7 @@ void	*cardiac_monitor(void *args)
 		id++;
 		if (id == data->number_of_philosophers)
 			id = 0;
+		usleep(20);
 	}
 	return (NULL);
 }

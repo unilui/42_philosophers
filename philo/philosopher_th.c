@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.c                                     :+:      :+:    :+:   */
+/*   philosopher_th.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/04 21:35:41 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/06 17:38:52 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,8 @@ void	*philosopher(void *args)
 	t_philo	*info;
 
 	info = (t_philo *)args;
-	while (simulation_status(info) == STOP)
-		continue ;
+	if (info->id % 2)
+		usleep(5000);
 	while (simulation_status(info) == RUNNING)
 	{
 		printf("%zu: 😈 %d is thinking 🤔\n", current_time(), info->id + 1);

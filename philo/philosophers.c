@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/05 02:29:05 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/06 17:36:47 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ int	main(int argc, char **argv)
 			init_philosophers(&data);
 			init_mtx(&data);
 			create_threads(&data);
-			data.simulation = RUNNING;
 			wait_threads(&data);
 			destroy_mtx(&data);
 			free_memory(&data);
