@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:20:23 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/05 02:28:50 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/09 19:41:36 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,12 @@ typedef struct s_philo
 	int				orders;
 	char			left_fork;
 	char			right_fork;
+	int				nop;
 	char			*forks;
 	int				*simulation;
 	pthread_mutex_t	*fork_mtx;
 	pthread_mutex_t	*simulation_mtx;
+	pthread_mutex_t	*print_mtx;
 	pthread_mutex_t	philo_mtx;
 }	t_philo;
 
@@ -55,9 +57,11 @@ typedef struct s_data
 	pthread_t		*th;
 	pthread_mutex_t	*fork_mtx;
 	pthread_mutex_t	simulation_mtx;
+	pthread_mutex_t	print_mtx;
 }	t_data;
 
 void	*ft_calloc(size_t nmemb, size_t size);
+int		simulation_status(t_philo *ph);
 void	ft_bzero(void *s, size_t n);
 int		ft_isdigit(int c);
 long	ft_atoi(const char *nptr);

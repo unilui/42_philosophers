@@ -18,12 +18,12 @@ RM			= rm -rf
 
 $(OBJS_DIR)%.o:	%.c
 			@mkdir -p $(dir $@)
-			@$(CC) $(CFLAGS) -O3 -c $< -o $@
+			@$(CC) $(CFLAGS) -g -O3 -c $< -o $@
 
 all:		$(NAME)
 
 $(NAME):	$(OBJS)
-			@${CC} $(OBJS) -o $(NAME) $(LIBS)
+			@${CC} $(OBJS) -g -o $(NAME) $(LIBS)
 
 clean:
 			@$(RM) $(OBJS_DIR)

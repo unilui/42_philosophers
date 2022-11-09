@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.c                                     :+:      :+:    :+:   */
+/*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/04 21:35:41 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/09 19:38:56 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,4 +23,14 @@ size_t	current_time(void)
 	if (!initial_time)
 		initial_time = time;
 	return (time - initial_time);
+}
+
+int	simulation_status(t_philo *ph)
+{
+	int	status;
+
+	pthread_mutex_lock(ph->simulation_mtx);
+	status = *ph->simulation;
+	pthread_mutex_unlock(ph->simulation_mtx);
+	return (status);
 }

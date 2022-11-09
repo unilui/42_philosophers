@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/06 17:42:51 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/09 18:24:06 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,9 @@ void	*cardiac_monitor(void *args)
 		if (current_time() > data->ph[id].time_to_die)
 		{
 			data->simulation = STOP;
+			pthread_mutex_lock(&data->print_mtx);
 			printf("%zu: 😵 %d died 💀\n", current_time(), id + 1);
+			pthread_mutex_unlock(&data->print_mtx);
 		}
 		pthread_mutex_unlock(&data->simulation_mtx);
 		pthread_mutex_unlock(&data->ph[id].philo_mtx);

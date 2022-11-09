@@ -6,20 +6,17 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/06 17:38:52 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/09 19:48:32 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	simulation_status(t_philo *ph)
+void	put_message(t_philo *ph, char *message)
 {
-	int	status;
-
-	pthread_mutex_lock(ph->simulation_mtx);
-	status = *ph->simulation;
-	pthread_mutex_unlock(ph->simulation_mtx);
-	return (status);
+	pthread_mutex_lock(ph->print_mtx);
+	printf("%zu: 😈 %d %s\n", current_time(), ph->id + 1, message);
+	pthread_mutex_unlock(ph->print_mtx);
 }
 
 int	get_forks(t_philo *ph)
@@ -34,10 +31,8 @@ int	get_forks(t_philo *ph)
 	{
 		ph->forks[ph->left_fork] = 0;
 		ph->forks[ph->right_fork] = 0;
-		printf("%zu: 😈 %d has taken a fork 🥢\n",
-			current_time(), ph->id + 1);
-		printf("%zu: 😈 %d has taken a fork 🥢\n",
-			current_time(), ph->id + 1);
+		put_message(ph, "has taken a fork 🥢");
+		put_message(ph, "has taken a fork 🥢");
 		status = 1;
 	}
 	else
@@ -66,29 +61,28 @@ void	call_waitress(t_philo *ph)
 
 void	*philosopher(void *args)
 {
-	t_philo	*info;
+	t_philo	*ph;
 
-	info = (t_philo *)args;
-	if (info->id % 2)
+	ph = (t_philo *)args;
+	if (ph->id % 2)
 		usleep(5000);
-	while (simulation_status(info) == RUNNING)
+	while (simulation_status(ph) == RUNNING)
 	{
-		printf("%zu: 😈 %d is thinking 🤔\n", current_time(), info->id + 1);
-		while (!get_forks(info) && simulation_status(info) == RUNNING)
+		if (!(ph->id % 2) && (ph->nop % 2))
+			usleep(5000);
+		put_message(ph, "is thinking 🤔");
+		while (!get_forks(ph) && simulation_status(ph) == RUNNING)
 			continue ;
-		if (simulation_status(info) == STOP)
-		{
-			return_forks(info);
+		if (simulation_status(ph) == STOP)
 			break ;
-		}
-		printf("%zu: 😈 %d is eating 🍽️\n", current_time(), info->id + 1);
-		usleep(info->time_to_eat * 1000);
-		call_waitress(info);
-		return_forks(info);
-		if (simulation_status(info) == STOP)
+		put_message(ph, "is eating 🍽️");
+		usleep(ph->time_to_eat * 1000);
+		call_waitress(ph);
+		return_forks(ph);
+		if (simulation_status(ph) == STOP)
 			break ;
-		printf("%zu: 😈 %d is sleeping 😴\n", current_time(), info->id + 1);
-		usleep(info->time_to_sleep * 1000);
+		put_message(ph, "is sleeping 😴");
+		usleep(ph->time_to_sleep * 1000);
 	}
 	return (NULL);
 }
