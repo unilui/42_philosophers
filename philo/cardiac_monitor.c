@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cardiac_monitor.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: lufelip2 <lufelip2@student.42sp.org.br     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/09 18:24:06 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/22 22:12:12 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	*cardiac_monitor(void *args)
 	{
 		pthread_mutex_lock(&data->simulation_mtx);
 		pthread_mutex_lock(&data->ph[id].philo_mtx);
-		if (current_time() > data->ph[id].time_to_die)
+		if ((int)current_time() > data->ph[id].time_to_die)
 		{
 			data->simulation = STOP;
 			pthread_mutex_lock(&data->print_mtx);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosopher_th.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: lufelip2 <lufelip2@student.42sp.org.br     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/09 19:48:32 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/22 22:11:48 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,31 +24,31 @@ int	get_forks(t_philo *ph)
 	int	status;
 
 	status = 0;
-	pthread_mutex_lock(&ph->fork_mtx[ph->left_fork]);
-	pthread_mutex_lock(&ph->fork_mtx[ph->right_fork]);
-	if (ph->forks[ph->left_fork] && ph->forks[ph->right_fork]
+	pthread_mutex_lock(&ph->fork_mtx[(int)ph->left_fork]);
+	pthread_mutex_lock(&ph->fork_mtx[(int)ph->right_fork]);
+	if (ph->forks[(int)ph->left_fork] && ph->forks[(int)ph->right_fork]
 		&& *ph->simulation == RUNNING)
 	{
-		ph->forks[ph->left_fork] = 0;
-		ph->forks[ph->right_fork] = 0;
+		ph->forks[(int)ph->left_fork] = 0;
+		ph->forks[(int)ph->right_fork] = 0;
 		put_message(ph, "has taken a fork 🥢");
 		put_message(ph, "has taken a fork 🥢");
 		status = 1;
 	}
 	else
 	{
-		pthread_mutex_unlock(&ph->fork_mtx[ph->left_fork]);
-		pthread_mutex_unlock(&ph->fork_mtx[ph->right_fork]);
+		pthread_mutex_unlock(&ph->fork_mtx[(int)ph->left_fork]);
+		pthread_mutex_unlock(&ph->fork_mtx[(int)ph->right_fork]);
 	}
 	return (status);
 }
 
 void	return_forks(t_philo *ph)
 {
-	ph->forks[ph->left_fork] = 1;
-	ph->forks[ph->right_fork] = 1;
-	pthread_mutex_unlock(&ph->fork_mtx[ph->left_fork]);
-	pthread_mutex_unlock(&ph->fork_mtx[ph->right_fork]);
+	ph->forks[(int)ph->left_fork] = 1;
+	ph->forks[(int)ph->right_fork] = 1;
+	pthread_mutex_unlock(&ph->fork_mtx[(int)ph->left_fork]);
+	pthread_mutex_unlock(&ph->fork_mtx[(int)ph->right_fork]);
 }
 
 void	call_waitress(t_philo *ph)

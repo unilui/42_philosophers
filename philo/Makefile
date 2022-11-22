@@ -12,18 +12,18 @@ OBJS		= ${SRCS:%.c=$(OBJS_DIR)%.o}
 OBJS_DIR	= objects/
 NAME		= philo
 CC			= cc
-WFLAGS		= -Wall -Werror -Wextra
+CFLAGS		= -Wall -Werror -Wextra
 LIBS		= -pthread
 RM			= rm -rf
 
 $(OBJS_DIR)%.o:	%.c
 			@mkdir -p $(dir $@)
-			@$(CC) $(CFLAGS) -g -O3 -c $< -o $@
+			@$(CC) $(CFLAGS) -g -c $< -o $@
 
 all:		$(NAME)
 
 $(NAME):	$(OBJS)
-			@${CC} $(OBJS) -g -o $(NAME) $(LIBS)
+			@${CC} $(CFLAGS) $(OBJS) -g -o $(NAME) $(LIBS)
 
 clean:
 			@$(RM) $(OBJS_DIR)
