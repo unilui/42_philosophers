@@ -1,4 +1,5 @@
 SRCS		= philosophers.c\
+				stages.c\
 				utils.c\
 				philosopher_th.c\
 				time.c\

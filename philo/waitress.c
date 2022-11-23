@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/22 22:21:57 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/23 15:40:47 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ void	*waitress(void *args)
 			pthread_mutex_unlock(&data->ph[actual].philo_mtx);
 			usleep(20);
 		}
-		usleep(500);
 		pthread_mutex_lock(&data->simulation_mtx);
 		data->simulation = STOP;
 		pthread_mutex_unlock(&data->simulation_mtx);

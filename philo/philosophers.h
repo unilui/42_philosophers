@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:20:23 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/22 20:52:43 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/23 15:39:07 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef struct s_philo
 	int				orders;
 	char			left_fork;
 	char			right_fork;
+	int				holding_fork;
 	int				nop;
 	char			*forks;
 	int				*simulation;
@@ -62,6 +63,12 @@ typedef struct s_data
 	pthread_mutex_t	time_mtx;
 }	t_data;
 
+void	thinking(t_philo *ph);
+void	eating(t_philo *ph);
+void	sleeping(t_philo *ph);
+void	return_forks(t_philo *ph);
+void	put_message(t_philo *ph, char *message);
+void	call_waitress(t_philo *ph);
 void	*ft_calloc(size_t nmemb, size_t size);
 int		simulation_status(t_philo *ph);
 void	ft_bzero(void *s, size_t n);

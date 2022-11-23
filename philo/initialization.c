@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/22 20:49:37 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/23 15:34:24 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,15 +56,14 @@ void	create_threads(t_data *data)
 void	init_philosophers(t_data *data)
 {
 	int	id;
-	int	nbr;
 
 	id = 0;
-	nbr = data->number_of_philosophers;
-	while (id < nbr)
+	while (id < data->number_of_philosophers)
 	{
 		data->ph[id].nop = data->number_of_philosophers;
 		data->ph[id].simulation = &data->simulation;
 		data->ph[id].simulation_mtx = &data->simulation_mtx;
+		data->ph[id].holding_fork = 0;
 		data->ph[id].time_mtx = &data->time_mtx;
 		data->ph[id].print_mtx = &data->print_mtx;
 		data->ph[id].time_to_die = data->time_to_die;
@@ -74,10 +73,6 @@ void	init_philosophers(t_data *data)
 		data->ph[id].forks = data->forks;
 		data->ph[id].fork_mtx = data->fork_mtx;
 		data->ph[id].left_fork = id;
-		if (id == (nbr - 1) && nbr > 1)
-			data->ph[id].right_fork = 0;
-		else
-			data->ph[id].right_fork = id + 1;
 		data->ph[id].id = id;
 		id++;
 	}
@@ -108,12 +103,23 @@ void	init_mtx(t_data *data)
 
 void	init_forks(t_data *data)
 {
-	int	i;
+	int	id;
+	int	nbr;
 
-	i = 0;
-	while (i < data->number_of_philosophers)
+	id = 0;
+	nbr = data->number_of_philosophers;
+	while (id < nbr)
 	{
-		data->forks[i] = 1;
-		i++;
+		data->forks[id] = 1;
+		id++;
+	}
+	id = 0;
+	while (id < nbr)
+	{
+		if (id == (nbr - 1) && nbr > 1)
+			data->ph[id].right_fork = 0;
+		else
+			data->ph[id].right_fork = id + 1;
+		id++;
 	}
 }

@@ -1,37 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.c                                     :+:      :+:    :+:   */
+/*   stages.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/23 15:34:02 by lufelip2         ###   ########.fr       */
+/*   Created: 2022/11/23 15:35:50 by lufelip2          #+#    #+#             */
+/*   Updated: 2022/11/23 15:36:18 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	main(int argc, char **argv)
+void	thinking(t_philo *ph)
 {
-	t_data	data;
+	if (!(ph->id % 2) && (ph->nop % 2))
+		usleep(5000);
+	put_message(ph, "is thinking 🤔");
+}
 
-	if (args_validation(argc, argv))
-	{
-		if (init_simulation(argc, argv, &data))
-		{
-			init_philosophers(&data);
-			init_forks(&data);
-			init_mtx(&data);
-			create_threads(&data);
-			wait_threads(&data);
-			destroy_mtx(&data);
-			free_memory(&data);
-		}
-		else
-			return (2);
-	}
-	else
-		return (1);
-	return (0);
+void	eating(t_philo *ph)
+{
+	put_message(ph, "is eating 🍽️");
+	usleep(ph->time_to_eat * 1000);
+	call_waitress(ph);
+	return_forks(ph);
+}
+
+void	sleeping(t_philo *ph)
+{
+	put_message(ph, "is sleeping 😴");
+	usleep(ph->time_to_sleep * 1000);
 }

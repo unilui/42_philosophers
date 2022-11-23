@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/22 22:33:11 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/23 15:40:16 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ int	get_forks(t_philo *ph)
 		put_message(ph, "has taken a fork 🥢");
 		put_message(ph, "has taken a fork 🥢");
 		status = 1;
+		ph->holding_fork = 1;
 	}
 	else
 	{
@@ -47,6 +48,7 @@ void	return_forks(t_philo *ph)
 {
 	ph->forks[(int)ph->left_fork] = 1;
 	ph->forks[(int)ph->right_fork] = 1;
+	ph->holding_fork = 0;
 	pthread_mutex_unlock(&ph->fork_mtx[(int)ph->left_fork]);
 	pthread_mutex_unlock(&ph->fork_mtx[(int)ph->right_fork]);
 }
@@ -66,25 +68,19 @@ void	*philosopher(void *args)
 	ph = (t_philo *)args;
 	if (ph->id % 2)
 		usleep(5000);
-	// turn stages into functions
 	while (simulation_status(ph) == RUNNING)
 	{
-		if (!(ph->id % 2) && (ph->nop % 2))
-			usleep(5000);
-		put_message(ph, "is thinking 🤔");
+		thinking(ph);
 		while (!get_forks(ph) && simulation_status(ph) == RUNNING)
 			continue ;
 		if (simulation_status(ph) == STOP)
 			break ;
-		put_message(ph, "is eating 🍽️");
-		usleep(ph->time_to_eat * 1000);
-		call_waitress(ph);
-		return_forks(ph);
+		eating(ph);
 		if (simulation_status(ph) == STOP)
 			break ;
-		put_message(ph, "is sleeping 😴");
-		usleep(ph->time_to_sleep * 1000);
+		sleeping(ph);
 	}
-	// add function to verify if still holds forks
+	if (ph->holding_fork)
+		return_forks(ph);
 	return (NULL);
 }
