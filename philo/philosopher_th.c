@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosopher_th.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lufelip2 <lufelip2@student.42sp.org.br     +#+  +:+       +#+        */
+/*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/22 22:11:48 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/22 22:33:11 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	put_message(t_philo *ph, char *message)
 {
 	pthread_mutex_lock(ph->print_mtx);
-	printf("%zu: 😈 %d %s\n", current_time(), ph->id + 1, message);
+	printf("%zu: 😈 %d %s\n", current_time(ph->time_mtx), ph->id + 1, message);
 	pthread_mutex_unlock(ph->print_mtx);
 }
 
@@ -27,7 +27,7 @@ int	get_forks(t_philo *ph)
 	pthread_mutex_lock(&ph->fork_mtx[(int)ph->left_fork]);
 	pthread_mutex_lock(&ph->fork_mtx[(int)ph->right_fork]);
 	if (ph->forks[(int)ph->left_fork] && ph->forks[(int)ph->right_fork]
-		&& *ph->simulation == RUNNING)
+		&& simulation_status(ph) == RUNNING)
 	{
 		ph->forks[(int)ph->left_fork] = 0;
 		ph->forks[(int)ph->right_fork] = 0;
@@ -54,7 +54,7 @@ void	return_forks(t_philo *ph)
 void	call_waitress(t_philo *ph)
 {
 	pthread_mutex_lock(&ph->philo_mtx);
-	ph->time_to_die = current_time() + ph->ttd;
+	ph->time_to_die = current_time(ph->time_mtx) + ph->ttd;
 	ph->orders++;
 	pthread_mutex_unlock(&ph->philo_mtx);
 }
@@ -66,6 +66,7 @@ void	*philosopher(void *args)
 	ph = (t_philo *)args;
 	if (ph->id % 2)
 		usleep(5000);
+	// turn stages into functions
 	while (simulation_status(ph) == RUNNING)
 	{
 		if (!(ph->id % 2) && (ph->nop % 2))
@@ -84,5 +85,6 @@ void	*philosopher(void *args)
 		put_message(ph, "is sleeping 😴");
 		usleep(ph->time_to_sleep * 1000);
 	}
+	// add function to verify if still holds forks
 	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/09 18:16:59 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/22 22:13:59 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void	destroy_mtx(t_data *data)
 	nbr = data->number_of_philosophers;
 	pthread_mutex_destroy(&data->simulation_mtx);
 	pthread_mutex_destroy(&data->print_mtx);
+	pthread_mutex_destroy(&data->time_mtx);
 	while (id < nbr)
 	{
 		pthread_mutex_destroy(&data->ph[id].philo_mtx);

@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/09 19:43:11 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/22 20:49:37 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ void	init_philosophers(t_data *data)
 		data->ph[id].nop = data->number_of_philosophers;
 		data->ph[id].simulation = &data->simulation;
 		data->ph[id].simulation_mtx = &data->simulation_mtx;
+		data->ph[id].time_mtx = &data->time_mtx;
 		data->ph[id].print_mtx = &data->print_mtx;
 		data->ph[id].time_to_die = data->time_to_die;
 		data->ph[id].ttd = data->time_to_die;
@@ -91,6 +92,7 @@ void	init_mtx(t_data *data)
 	nbr = data->number_of_philosophers;
 	pthread_mutex_init(&data->simulation_mtx, NULL);
 	pthread_mutex_init(&data->print_mtx, NULL);
+	pthread_mutex_init(&data->time_mtx, NULL);
 	while (id < nbr)
 	{
 		pthread_mutex_init(&data->ph[id].philo_mtx, NULL);

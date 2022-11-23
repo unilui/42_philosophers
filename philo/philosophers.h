@@ -6,7 +6,7 @@
 /*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:20:23 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/09 19:41:36 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/22 20:52:43 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_philo
 	pthread_mutex_t	*fork_mtx;
 	pthread_mutex_t	*simulation_mtx;
 	pthread_mutex_t	*print_mtx;
+	pthread_mutex_t	*time_mtx;
 	pthread_mutex_t	philo_mtx;
 }	t_philo;
 
@@ -58,6 +59,7 @@ typedef struct s_data
 	pthread_mutex_t	*fork_mtx;
 	pthread_mutex_t	simulation_mtx;
 	pthread_mutex_t	print_mtx;
+	pthread_mutex_t	time_mtx;
 }	t_data;
 
 void	*ft_calloc(size_t nmemb, size_t size);
@@ -68,7 +70,7 @@ long	ft_atoi(const char *nptr);
 int		args_validation(int argc, char **argv);
 int		init_simulation(int argc, char **argv, t_data *data);
 void	*philosopher(void *args);
-size_t	current_time(void);
+size_t	current_time(pthread_mutex_t *time_mtx);
 void	*cardiac_monitor(void *args);
 void	*waitress(void *args);
 void	create_threads(t_data *data);

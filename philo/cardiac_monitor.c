@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cardiac_monitor.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lufelip2 <lufelip2@student.42sp.org.br     +#+  +:+       +#+        */
+/*   By: lufelip2 <lufelip2@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 17:22:41 by lufelip2          #+#    #+#             */
-/*   Updated: 2022/11/22 22:12:12 by lufelip2         ###   ########.fr       */
+/*   Updated: 2022/11/22 21:56:49 by lufelip2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,15 @@ void	*cardiac_monitor(void *args)
 	id = 0;
 	data = (t_data *)args;
 	while (id < data->number_of_philosophers
-		&& data->simulation == RUNNING)
+		&& simulation_status(&data->ph[id]) == RUNNING)
 	{
 		pthread_mutex_lock(&data->simulation_mtx);
 		pthread_mutex_lock(&data->ph[id].philo_mtx);
-		if ((int)current_time() > data->ph[id].time_to_die)
+		if ((int)current_time(&data->time_mtx) > data->ph[id].time_to_die)
 		{
 			data->simulation = STOP;
 			pthread_mutex_lock(&data->print_mtx);
-			printf("%zu: 😵 %d died 💀\n", current_time(), id + 1);
+			printf("%zu: 😵 %d died 💀\n", current_time(&data->time_mtx), id + 1);
 			pthread_mutex_unlock(&data->print_mtx);
 		}
 		pthread_mutex_unlock(&data->simulation_mtx);
